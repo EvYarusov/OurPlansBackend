@@ -1,0 +1,457 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Todo Service API",
+    "version": "0.1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "security": [
+    {
+      "CookieAuthentication": []
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailAndPassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешная аутентификация",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Идентификатор сессии",
+                "example": "JSESSIONID=1234"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Неверный логин или пароль",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный выход"
+          }
+        }
+      }
+    },
+    "/api/tasks": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Получение списка всех задач",
+        "description": "Доступно только администратору",
+        "operationId": "getAll",
+        "responses": {
+          "200": {
+            "description": "Страница с задачами",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksPage"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Пользователь не аутентифицирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Добавление задачи",
+        "description": "Доступно только пользователю",
+        "operationId": "addTask",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Пользователь не аутентифицирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Созданная задача",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/register": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Регистрация пользователя",
+        "operationId": "signUp",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewUserDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Зарегистрированный пользователь",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/my/tasks": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Получение списка своих задач",
+        "description": "Доступно только пользователю",
+        "operationId": "getMyTasks",
+        "responses": {
+          "403": {
+            "description": "Пользователь не аутентифицирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список задач",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TasksPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/my/profile": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Получение своего профиля",
+        "description": "Доступно только аутентифицированному пользователю",
+        "operationId": "getProfile",
+        "responses": {
+          "403": {
+            "description": "Пользователь не аутентифицирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Информацию о профиле",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/{task-id}": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Получение задачи",
+        "description": "Доступно только администратору",
+        "operationId": "getById",
+        "parameters": [
+          {
+            "name": "task-id",
+            "in": "path",
+            "description": "идентификатор задачи",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Пользователь не аутентифицирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Задача",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Не найдено",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Удаление задачи",
+        "description": "Доступно только администратору",
+        "operationId": "deleteTask",
+        "parameters": [
+          {
+            "name": "task-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Пользователь не аутентифицирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Задача удалена"
+          },
+          "404": {
+            "description": "Не найдено",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EmailAndPassword": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "description": "Email и пароль пользователя"
+      },
+      "StandardResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Текст сообщения"
+          },
+          "status": {
+            "type": "integer",
+            "description": "HTTP-статус",
+            "format": "int32"
+          }
+        },
+        "description": "StandardResponseDto"
+      },
+      "TaskDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "идентификатор задачи, не указывается при добавлении",
+            "format": "int64",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Название задачи",
+            "example": "Task"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание задачи",
+            "example": "Description of Task "
+          }
+        },
+        "description": "Задача"
+      },
+      "NewUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "идентификатор пользователя",
+            "format": "int64",
+            "example": 1
+          },
+          "email": {
+            "type": "string",
+            "description": "имя пользователя",
+            "example": "username"
+          }
+        },
+        "description": "Зарегистрированный пользователь"
+      },
+      "TasksPage": {
+        "type": "object",
+        "properties": {
+          "tasks": {
+            "type": "array",
+            "description": "Список задач",
+            "items": {
+              "$ref": "#/components/schemas/TaskDto"
+            }
+          }
+        },
+        "description": "Страница с задачами"
+      },
+      "ProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "name": "JSESSOINID",
+        "in": "cookie"
+      }
+    }
+  }
+}
