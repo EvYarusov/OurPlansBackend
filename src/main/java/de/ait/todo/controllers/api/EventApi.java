@@ -34,7 +34,7 @@ public interface EventApi {
             @ApiResponse(responseCode = "201", description = "Мероприятие добавлено",
             content = {
                     @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = NewEventDTO.class))
+                    schema = @Schema(implementation = EventDTO.class))
             })
     })
     @PostMapping

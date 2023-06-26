@@ -5,6 +5,6 @@ import de.ait.todo.dto.NewEventDTO;
 
 public interface EventsService {
 
-    Long addEvent(Long currentUserID, NewEventDTO event);
+    Long addEvent(Long currentUserID, NewEventDTO newEventDTO);
 
 }

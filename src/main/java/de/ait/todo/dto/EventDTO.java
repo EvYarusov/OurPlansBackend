@@ -16,25 +16,23 @@ import java.time.LocalDateTime;
 @Builder
 @Schema(description = "Зарегистрированный пользователь")
 public class EventDTO {
-    @Schema(description = "Название мероприятия", example = "Volleyball")
+
     private Long id;
-    @Schema(description = "Название мероприятия", example = "Volleyball")
-    private LocalDateTime cteatedAt;
-    @Schema(description = "Название мероприятия", example = "Volleyball")
+
     private int authorId;
 
-    @Schema(description = "Название мероприятия", example = "Volleyball")
-
     private String title;
-    @Schema(description = "Название мероприятия", example = "Volleyball")
+
     private String description;
-    @Schema(description = "Название мероприятия", example = "Volleyball")
-    private LocalDateTime startAt;
-    @Schema(description = "Название мероприятия", example = "Volleyball")
-    private LocalDateTime finishAt;
-    @Schema(description = "Название мероприятия", example = "Volleyball")
+
+    private String startAt;
+
+    private String finishAt;
+
     private String place;
-    @Schema(description = "Название мероприятия", example = "Volleyball")
+
     private String category;
+
+    private String isBlocked;
 
 }

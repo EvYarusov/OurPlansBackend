@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Service
 public class EventsServiceImpl implements EventsService {
@@ -24,6 +26,7 @@ public class EventsServiceImpl implements EventsService {
     public Long addEvent(Long currentUserID, NewEventDTO newEventDTO) {
 
         Event event = modelMapper.map(newEventDTO, Event.class);
+        event.setCteatedAt(LocalDateTime.now());
         event.setAuthorId(currentUserID);
 
         return eventsRepository.save(event).getId();
