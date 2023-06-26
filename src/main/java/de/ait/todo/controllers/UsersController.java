@@ -3,6 +3,8 @@ package de.ait.todo.controllers;
 import de.ait.todo.controllers.api.UsersApi;
 import de.ait.todo.dto.ProfileDto;
 import de.ait.todo.dto.TasksPage;
+import de.ait.todo.dto.UserDto;
+import de.ait.todo.dto.UsersPage;
 import de.ait.todo.security.details.AuthenticatedUser;
 import de.ait.todo.services.UsersService;
 import lombok.RequiredArgsConstructor;
@@ -33,4 +35,35 @@ public class UsersController implements UsersApi {
         Long currentUserId = currentUser.getUser().getId();
         return ResponseEntity.ok(usersService.getTasksByUser(currentUserId));
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public ResponseEntity<UsersPage> getAllUsers() {
+
+        return ResponseEntity.ok(usersService.getAllUsers());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @Override
+    public ResponseEntity<UserDto> getUserById(Long userId, AuthenticatedUser currentUser) {
+
+        Long currentUserId = currentUser.getUser().getId();
+
+        return ResponseEntity.ok(usersService.getUserById(userId, currentUserId));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public ResponseEntity<UserDto> blockUserById(Long userId) {
+
+        return ResponseEntity.ok(usersService.blockUserById(userId));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public ResponseEntity<UserDto> unblockUserById(Long userId) {
+
+        return ResponseEntity.ok(usersService.unblockUserById(userId));
+    }
+
 }

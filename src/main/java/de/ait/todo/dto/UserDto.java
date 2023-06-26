@@ -17,16 +17,26 @@ import java.util.stream.Collectors;
 @Builder
 @Schema(description = "Зарегистрированный пользователь")
 public class UserDto {
+
     @Schema(description = "идентификатор пользователя", example = "1")
     private Long id;
+
+    /*@Schema(description = "электронная почта", example = "my@mail.co")
+    private String email;*/
+
     @Schema(description = "имя пользователя", example = "username")
-    private String email;
+    private String userName;
+
+    private boolean isBlocked;
+
     public static UserDto from(User user) {
         return UserDto.builder()
                 .id(user.getId())
-                .email(user.getEmail())
+                .userName(user.getUserName())
+                .isBlocked(user.isBlocked())
                 .build();
     }
+//.userName( user.getUserName().equals("")  ? ("user" + user.getId()) : user.getUserName() )
 
     public static List<UserDto> from(List<User> users) {
         return users.stream()

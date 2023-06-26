@@ -26,10 +26,21 @@ public class User {
     private Long id;
 
     private String email;
+
     private String hashPassword;
 
     @Enumerated(value = EnumType.STRING)
     private Role role;
+
+    private String userName;
+
+    private String fullName;
+
+    private int age;
+
+    private String gender;
+
+    private boolean isBlocked;
 
     @OneToMany(mappedBy = "user")
     private List<Task> tasks;
