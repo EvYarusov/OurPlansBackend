@@ -34,11 +34,11 @@ public interface EventApi {
             @ApiResponse(responseCode = "201", description = "Мероприятие добавлено",
             content = {
                     @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = EventDTO.class))
+                    schema = @Schema(implementation = NewEventDTO.class))
             })
     })
     @PostMapping
-    Long addEvent(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+    ResponseEntity<Long> addEvent(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                       @RequestBody NewEventDTO newEventDTO);
 
 }

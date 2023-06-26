@@ -17,12 +17,11 @@ import java.time.LocalDateTime;
 @Entity
 public class Event {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime cteatedAt;  //?
 
-    @ManyToOne
     private Long authorId;
 
     private String title;
