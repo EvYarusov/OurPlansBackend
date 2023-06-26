@@ -1,6 +1,7 @@
 package de.ait.todo.services.impl;
 
 import de.ait.todo.dto.EventDTO;
+import de.ait.todo.dto.EventsPage;
 import de.ait.todo.dto.NewEventDTO;
 import de.ait.todo.models.Event;
 import de.ait.todo.models.User;
@@ -23,12 +24,34 @@ public class EventsServiceImpl implements EventsService {
     private final UsersRepository usersRepository;
 
     @Override
-    public Long addEvent(Long currentUserID, NewEventDTO newEventDTO) {
+    public EventDTO addEvent(Long currentUserID, NewEventDTO newEventDTO) {
 
-        Event event = modelMapper.map(newEventDTO, Event.class);
-        event.setCteatedAt(LocalDateTime.now());
-        event.setAuthorId(currentUserID);
+        User user = usersRepository.findById(currentUserID)
+                .orElseThrow(IllegalArgumentException::new);
 
-        return eventsRepository.save(event).getId();
+        Event newEvent = Event.builder()
+                .createdAt(LocalDateTime.now())
+                .user(user)
+                .title(newEventDTO.getTitle())
+                .description(newEventDTO.getDescription())
+                .startAt(newEventDTO.getStartAt())
+                .finishAt(newEventDTO.getFinishAt())
+                .place(newEventDTO.getPlace())
+                .category(newEventDTO.getCategory())
+                .isBlocked(false)
+                .build();
+       // Event event = modelMapper.map(newEventDTO, Event.class);
+       // event.setCteatedAt(LocalDateTime.now());
+       // event.setAuthorId(currentUserID);
+
+        eventsRepository.save(newEvent);
+        return EventDTO.from(newEvent);   ///
+    }
+
+    @Override
+    public EventsPage getAllEvents() {
+        return EventsPage.builder()
+                .events(from(eventsRepository.findAll()))
+                .build();
     }
 }

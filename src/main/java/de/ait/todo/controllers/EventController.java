@@ -3,6 +3,7 @@ package de.ait.todo.controllers;
 
 import de.ait.todo.controllers.api.EventApi;
 import de.ait.todo.dto.EventDTO;
+import de.ait.todo.dto.EventsPage;
 import de.ait.todo.dto.NewEventDTO;
 import de.ait.todo.dto.TaskDto;
 import de.ait.todo.security.details.AuthenticatedUser;
@@ -21,9 +22,16 @@ public class EventController implements EventApi {
 
     @PreAuthorize("hasAuthority('USER')")
     @Override
-    public ResponseEntity<Long> addEvent(AuthenticatedUser authenticatedUser, NewEventDTO newEventDTO) {
+    public ResponseEntity<EventDTO> addEvent(AuthenticatedUser authenticatedUser, NewEventDTO newEventDTO) {
         Long currentUserId = authenticatedUser.getUser().getId();
         return ResponseEntity.status(201)
                 .body(eventsService.addEvent(currentUserId, newEventDTO));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN', 'USER')")
+    @Override
+    public ResponseEntity <EventsPage> getAllEvents() {
+        return ResponseEntity
+                .ok(eventsService.getAllEvents());
     }
 }

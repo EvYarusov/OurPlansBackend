@@ -20,9 +20,11 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime cteatedAt;  //?
+    private LocalDateTime createdAt;  //?
 
-    private Long authorId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String title;
 
@@ -36,6 +38,6 @@ public class Event {
 
     private String category;
 
-    private String isBlocked;
+    private Boolean isBlocked;
 
 }
