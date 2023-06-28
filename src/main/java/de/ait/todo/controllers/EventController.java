@@ -47,4 +47,14 @@ public class EventController implements EventApi {
         return ResponseEntity
                 .ok(eventsService.getEventsByUserId(userId));
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public ResponseEntity<EventDTO> eventBlock(Long eventId, Boolean isBlock) {
+        return ResponseEntity
+                .ok(eventsService.eventBlock(eventId, isBlock));
+    }
+
+
+
 }

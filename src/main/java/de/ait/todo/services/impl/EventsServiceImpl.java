@@ -75,4 +75,15 @@ public class EventsServiceImpl implements EventsService {
                 .events(from(eventsRepository.findAllByUser_Id(userId)))
                 .build();
     }
+
+    @Override
+    public EventDTO eventBlock(Long eventId, Boolean isBlock) {
+        Event event = eventsRepository.findById(eventId).orElseThrow(
+                () -> new NotFoundException("Мероприятие <" + eventId + "> не найдена")
+        );
+        event.setIsBlocked(isBlock);
+        eventsRepository.save(event);
+        return from(event);
+    }
+
 }

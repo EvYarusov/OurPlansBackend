@@ -13,4 +13,8 @@ public interface EventsService {
     EventDTO getEventById(Long eventId);
 
     EventsPage getEventsByUserId(Long userId);
+
+    EventDTO eventBlock(Long eventId, Boolean isBlock);
+
+
 }

@@ -85,4 +85,27 @@ public interface EventApi {
     })
     @GetMapping("/byUser/{user_id}")
     ResponseEntity<EventsPage> getEventsByUserId(@Parameter(description = "идентификатор пользователя") @PathVariable("user_id") Long userId);
+
+
+    @Operation(summary = "заблокировать/разблокировать мероприятие", description = "Доступно администратору")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Вы заблокировали мероприятие",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = EventDTO.class))
+                    }
+            ),
+            @ApiResponse(responseCode = "404", description = "Мероприятие не найдено",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto"))
+                    }
+            )
+    })
+    @PutMapping("/{event_id}/block")
+    ResponseEntity<EventDTO> eventBlock(@Parameter(description = "идентификатор мероприятия")
+                                        @PathVariable("event_id") Long eventId,
+                                        @RequestBody Boolean isBlock);
+
+
 }
