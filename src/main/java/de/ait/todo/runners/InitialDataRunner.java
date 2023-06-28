@@ -38,6 +38,7 @@ public class InitialDataRunner implements CommandLineRunner {
                     .role(User.Role.USER)
                     .hashPassword("$2a$10$RVSHTssubxIkoAl3rQ58UedU8sPMM6FZRxg1icrJg07f.MQAMRpDy") // alisher
                     .build();
+
             usersRepository.save(admin);
             usersRepository.save(alisher);
         }

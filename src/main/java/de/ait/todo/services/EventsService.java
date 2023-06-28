@@ -10,4 +10,7 @@ public interface EventsService {
 
     EventsPage getAllEvents ();
 
+    EventDTO getEventById(Long eventId);
+
+    EventsPage getEventsByUserId(Long userId);
 }

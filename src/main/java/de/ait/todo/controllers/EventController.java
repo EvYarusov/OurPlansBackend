@@ -28,10 +28,23 @@ public class EventController implements EventApi {
                 .body(eventsService.addEvent(currentUserId, newEventDTO));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @Override
     public ResponseEntity <EventsPage> getAllEvents() {
         return ResponseEntity
                 .ok(eventsService.getAllEvents());
+    }
+
+   // @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')") //?
+    @Override
+    public ResponseEntity<EventDTO> getEventById(Long eventId) {
+        return ResponseEntity.ok(eventsService.getEventById(eventId));
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @Override
+    public ResponseEntity<EventsPage> getEventsByUserId(Long userId) {
+        return ResponseEntity
+                .ok(eventsService.getEventsByUserId(userId));
     }
 }
