@@ -31,12 +31,14 @@ public class InitialDataRunner implements CommandLineRunner {
                     .email("admin@ait-tr.de")
                     .role(User.Role.ADMIN)
                     .hashPassword("$2a$10$YijmlwvWMcfIhT2qQOQ7EeRuMiByNjPtKXa78J7Y8z7XZWJJQTDa.") // admin
+                    .userName("admin")
                     .build();
 
             alisher = User.builder()
                     .email("alisher@ait-tr.de")
                     .role(User.Role.USER)
                     .hashPassword("$2a$10$RVSHTssubxIkoAl3rQ58UedU8sPMM6FZRxg1icrJg07f.MQAMRpDy") // alisher
+                    .userName("user2")
                     .build();
 
             usersRepository.save(admin);

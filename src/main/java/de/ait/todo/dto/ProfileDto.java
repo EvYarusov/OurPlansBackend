@@ -13,6 +13,19 @@ import lombok.NoArgsConstructor;
 public class ProfileDto {
 
     private Long id;
+
     private String email;
+
     private String role;
+
+    private String userName;
+
+    private String fullName;
+
+    private int age;
+
+    private String gender;
+
+    private boolean isBlocked;
+
 }
