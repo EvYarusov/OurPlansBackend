@@ -21,11 +21,18 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Override
     public UserDto signUp(NewUserDto newUser) {
+
         User user = User.builder()
                 .email(newUser.getEmail())
                 .hashPassword(passwordEncoder.encode(newUser.getPassword()))
                 .role(User.Role.USER)
                 .build();
+
+        Long id = usersRepository.save(user).getId();
+
+        user = usersRepository.findById(id).get();
+
+        user.setUserName("user"+id);
 
         usersRepository.save(user);
 

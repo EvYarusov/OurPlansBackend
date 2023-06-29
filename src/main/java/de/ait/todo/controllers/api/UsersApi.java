@@ -1,8 +1,6 @@
 package de.ait.todo.controllers.api;
 
-import de.ait.todo.dto.ProfileDto;
-import de.ait.todo.dto.StandardResponseDto;
-import de.ait.todo.dto.TasksPage;
+import de.ait.todo.dto.*;
 import de.ait.todo.security.details.AuthenticatedUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
@@ -63,4 +62,87 @@ public interface UsersApi {
     @GetMapping("/my/tasks")
     ResponseEntity<TasksPage> getMyTasks(@Parameter(hidden = true)
                                           @AuthenticationPrincipal AuthenticatedUser currentUser);
+
+    @Operation(summary = "Получение списка всех пользователей", description = "Доступно только администратору")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Список пользователей",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UsersPage.class)
+                            )
+                    }
+            ),
+            @ApiResponse(responseCode = "403", description = "Пользователь не уполномочен",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto")
+                            )
+                    }
+            )
+    })
+    @GetMapping
+    ResponseEntity<UsersPage> getAllUsers();
+
+    @Operation(summary = "Получение пользователя по id", description = "Доступно только аутентифицированному пользователю")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDto.class)
+                            )
+                    }
+            ),
+            @ApiResponse(responseCode = "403", description = "Пользователь не аутентифицирован",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto")
+                            )
+                    }
+            )
+    })
+    @GetMapping("/{user_id}")
+    ResponseEntity<UserDto> getUserById(Long userId,
+                                        @Parameter(hidden = true)
+                                        @AuthenticationPrincipal AuthenticatedUser currentUser);
+
+    @Operation(summary = "Блокирование пользователя по id", description = "Доступно только администратору")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь заблокирован",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDto.class)
+                            )
+                    }
+            ),
+            @ApiResponse(responseCode = "403", description = "Пользователь не уполномочен",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto")
+                            )
+                    }
+            )
+    })
+    @PutMapping("/{user_id}/block")
+    ResponseEntity<UserDto> blockUserById(Long userId);
+
+    @Operation(summary = "Разблокирование пользователя по id", description = "Доступно только администратору")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь разблокирован",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDto.class)
+                            )
+                    }
+            ),
+            @ApiResponse(responseCode = "403", description = "Пользователь не уполномочен",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto")
+                            )
+                    }
+            )
+    })
+    @PutMapping("/{user_id}/unblock")
+    ResponseEntity<UserDto> unblockUserById(Long userId);
+
 }
