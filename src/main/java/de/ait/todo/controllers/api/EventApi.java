@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tags(value = {
         @Tag(name = "Events")
 })
@@ -105,7 +107,58 @@ public interface EventApi {
     @PutMapping("/{event_id}/block")
     ResponseEntity<EventDTO> eventBlock(@Parameter(description = "идентификатор мероприятия")
                                         @PathVariable("event_id") Long eventId,
-                                        @RequestBody Boolean isBlock);
+                                        @Parameter(description = "Статус блокировки") @RequestParam Boolean isBlock);
+
+
+    @Operation(summary = "Посмотреть всех пользователей зарегистрировавшихся на мероприятие", description = "Доступно администратору, зарегистрированному пользователю")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователи, зарегистрированные на мероприятие",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UsersPage.class))
+                    }
+            ),
+            @ApiResponse(responseCode = "404", description = "Не найдено",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto"))
+                    }
+            )
+    })
+    @GetMapping("/{event_id}/members")
+    ResponseEntity<List<UserDto>> getMembersByEventId(@Parameter(description = "идентификатор мероприятие") @PathVariable("event_id") Long eventId);
+
+    @Operation(summary = "Зарегистрироваться на мероприятие", description = "Доступно только зарегистрированному пользователю")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Вы зарегистрированы под номером",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDto.class))
+                    })
+    })
+    @PostMapping("/{event_id}/members/me")
+    ResponseEntity<Integer> takePartInEvent(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                            @Parameter(description = "идентификатор мероприятие") @PathVariable("event_id") Long eventId);
+
+    @Operation(summary = "покинуть мероприятие", description = "Доступно зарегистрированному пользователю")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Вы покинули мероприятие",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = Integer.class))
+                    }
+            ),
+            @ApiResponse(responseCode = "404", description = "Мероприятие не найдено",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto"))
+                    }
+            )
+    })
+    @PutMapping("{event_id}/members/me")
+    ResponseEntity<Integer> eventOut(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                     @Parameter(description = "идентификатор мероприятия")
+                                     @PathVariable("event_id") Long eventId);
 
 
 }

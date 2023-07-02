@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.text.spi.DateFormatProvider;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,8 +24,8 @@ public class Event {
     private LocalDateTime createdAt;  //?
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "owner_id")
+    private User owner; // автор мероприятия
 
     private String title;
 
@@ -39,5 +40,12 @@ public class Event {
     private String category;
 
     private Boolean isBlocked;
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_member",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id"))
+    private List<User> members; // список участников мероприятия
 
 }

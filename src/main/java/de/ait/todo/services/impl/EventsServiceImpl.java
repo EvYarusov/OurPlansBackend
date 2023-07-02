@@ -1,20 +1,22 @@
 package de.ait.todo.services.impl;
 
-import de.ait.todo.dto.EventDTO;
-import de.ait.todo.dto.EventsPage;
-import de.ait.todo.dto.NewEventDTO;
+import de.ait.todo.dto.*;
 import de.ait.todo.exceptions.NotFoundException;
 import de.ait.todo.models.Event;
 import de.ait.todo.models.User;
 import de.ait.todo.repositories.EventsRepository;
 import de.ait.todo.repositories.UsersRepository;
+import de.ait.todo.security.details.AuthenticatedUser;
 import de.ait.todo.services.EventsService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import static de.ait.todo.dto.EventDTO.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -33,7 +35,7 @@ public class EventsServiceImpl implements EventsService {
 
         Event newEvent = Event.builder()
                 .createdAt(LocalDateTime.now())
-                .user(user)
+                .owner(user)
                 .title(newEventDTO.getTitle())
                 .description(newEventDTO.getDescription())
                 .startAt(newEventDTO.getStartAt())
@@ -72,18 +74,51 @@ public class EventsServiceImpl implements EventsService {
 //        );
 
         return EventsPage.builder()
-                .events(from(eventsRepository.findAllByUser_Id(userId)))
+                .events(from(eventsRepository.findAllByOwner_Id(userId))) ///
                 .build();
     }
 
     @Override
     public EventDTO eventBlock(Long eventId, Boolean isBlock) {
         Event event = eventsRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException("Мероприятие <" + eventId + "> не найдена")
+                () -> new NotFoundException("Мероприятие <" + eventId + "> не найдено")
         );
         event.setIsBlocked(isBlock);
         eventsRepository.save(event);
         return from(event);
     }
+
+    @Override
+    public List<UserDto> getMembersByEventId(Long eventId) {
+        // Event event = eventsRepository.findByIdAndIsBlocked(eventId, false).get(); почему отдает Лист?
+        Event event = eventsRepository.findById(eventId).get();
+        List<User> usersForEvent = event.getMembers();
+        List<UserDto> usersDtoForEvent = modelMapper.map(usersForEvent, new TypeToken<List<UserDto>>(){}.getType());
+        return usersDtoForEvent;
+    }
+
+    @Override
+    public Integer takePartInEvent(AuthenticatedUser authenticatedUser, Long eventId) {
+        Event event = eventsRepository.findById(eventId).orElseThrow(
+                () -> new NotFoundException("Мероприятие <" + eventId + "> не найдено")
+        );
+        User user = usersRepository.findById(authenticatedUser.getUser().getId()).orElseThrow(
+                () -> new NotFoundException("Пользователь <" + authenticatedUser.getUser().getId() + "> не найден")  // какая нужна ошибка?
+        );
+        event.getMembers().add(user);
+        eventsRepository.save(event);
+        return event.getMembers().size();
+    }
+
+    @Override
+    public Integer eventOut(AuthenticatedUser authenticatedUser, Long eventId) {
+        Event event = eventsRepository.findById(eventId).orElseThrow(
+                () -> new NotFoundException("Мероприятие <" + eventId + "> не найдено")
+        );
+        event.getMembers().remove(authenticatedUser);
+        eventsRepository.save(event);
+        return event.getMembers().size();
+    }
+
 
 }
