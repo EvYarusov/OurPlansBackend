@@ -120,5 +120,35 @@ public class EventsServiceImpl implements EventsService {
         return event.getMembers().size();
     }
 
+    @Override
+    public EventsPage getEventsByPlace(String place) {
+        return EventsPage.builder()
+                .events(from(eventsRepository.findAllByPlace(place))) //
+                .build();
+    }
+
+    @Override
+    public EventsPage getEventsByCategory(String category) {
+        EventsPage eventsPage =EventsPage.builder()
+                .events(from(eventsRepository.findAllByCategory(category))) //
+                .build();
+        return eventsPage;
+
+    }
+
+    @Override
+    public EventsPage getEventsCreatedByMe(AuthenticatedUser authenticatedUser) {
+        return getEventsByUserId(authenticatedUser.getUser().getId());
+    }
+
+    @Override
+    public EventsPage getEventsWereIAmMember(AuthenticatedUser authenticatedUser) {
+        User user = usersRepository.findById(authenticatedUser.getUser().getId()).orElseThrow(
+                () -> new NotFoundException("Пользователь <" + authenticatedUser.getUser().getId() + "> не найден"));
+        return EventsPage.builder()
+                .events(from(eventsRepository.findByMembersContaining(user)))
+                .build();
+    }
+
 
 }

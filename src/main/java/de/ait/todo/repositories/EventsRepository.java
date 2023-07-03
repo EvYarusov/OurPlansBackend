@@ -1,5 +1,6 @@
 package de.ait.todo.repositories;
 
+import de.ait.todo.dto.EventsPage;
 import de.ait.todo.models.Event;
 import de.ait.todo.models.Task;
 import de.ait.todo.models.User;
@@ -12,6 +13,13 @@ import java.util.List;
 @Repository
 public interface EventsRepository extends JpaRepository <Event, Long> {
     List<Event> findAllByOwner_Id(Long userId);
+
+    List<Event> findAllByPlace(String place);
+
+    List<Event> findAllByCategory(String category);
+
+    List<Event> findByMembersContaining(User eventMember);
+
   //  List<Event> findByUser(Long userId);
     List<Event> findAllByOwnerAndIsBlockedAndOwner_IsBlocked(User owner, Boolean isBlocked, Boolean isBlockedOwner);
     List<Event> findByIdAndIsBlocked(Long userId, Boolean isBlockedEvent);

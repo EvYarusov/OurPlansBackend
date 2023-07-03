@@ -23,4 +23,12 @@ public interface EventsService {
 
     Integer eventOut(AuthenticatedUser authenticatedUser, Long eventId);
 
+    EventsPage getEventsByPlace(String place);
+
+    EventsPage getEventsByCategory(String category);
+
+    EventsPage getEventsCreatedByMe(AuthenticatedUser authenticatedUser);
+
+    EventsPage getEventsWereIAmMember(AuthenticatedUser authenticatedUser);
+
 }

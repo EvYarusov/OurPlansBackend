@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.security.PermitAll;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -27,14 +28,14 @@ public class EventController implements EventApi {
                 .body(eventsService.addEvent(currentUserId, newEventDTO));
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PermitAll
     @Override
     public ResponseEntity <EventsPage> getAllEvents() {
         return ResponseEntity
                 .ok(eventsService.getAllEvents());
     }
 
-   // @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')") //?
+    @PermitAll
     @Override
     public ResponseEntity<EventDTO> getEventById(Long eventId) {
         return ResponseEntity.ok(eventsService.getEventById(eventId));
@@ -68,11 +69,38 @@ public class EventController implements EventApi {
                 .ok(eventsService.takePartInEvent(authenticatedUser, eventId));
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @Override
     public ResponseEntity<Integer> eventOut(AuthenticatedUser authenticatedUser, Long eventId) {
         return ResponseEntity
                 .ok(eventsService.eventOut(authenticatedUser, eventId));
     }
+
+    @PermitAll
+    @Override
+    public ResponseEntity<EventsPage> getEventsByPlace(String place) {
+        return ResponseEntity
+                .ok(eventsService.getEventsByPlace(place));
+    }
+
+    @Override
+    public ResponseEntity<EventsPage> getEventsByCategory(String category) {
+        return ResponseEntity
+                .ok(eventsService.getEventsByCategory(category));
+    }
+
+    @PreAuthorize("hasAuthority('USER')")
+    @Override
+    public ResponseEntity<EventsPage> getEventsCreatedByMe(AuthenticatedUser authenticatedUser) {
+        return ResponseEntity
+                .ok(eventsService.getEventsCreatedByMe(authenticatedUser));
+    }
+
+//    @Override
+//    public ResponseEntity<EventsPage> getEventsWereIAmMember(AuthenticatedUser authenticatedUser) {
+//        return ResponseEntity
+//                .ok(eventsService.getEventsWereIAmMember(authenticatedUser));
+//    }
 
 
 }

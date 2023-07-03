@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
-@Component
+//@Component
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class InitialDataRunner implements CommandLineRunner {
 
