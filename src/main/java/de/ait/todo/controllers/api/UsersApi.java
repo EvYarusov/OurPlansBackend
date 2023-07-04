@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -42,25 +43,6 @@ public interface UsersApi {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/my/profile")
     ResponseEntity<ProfileDto> getProfile(@Parameter(hidden = true)
-                                          @AuthenticationPrincipal AuthenticatedUser currentUser);
-
-    @Operation(summary = "Получение списка своих задач", description = "Доступно только пользователю")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Список задач",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = TasksPage.class))
-                    }
-            ),
-            @ApiResponse(responseCode = "403", description = "Пользователь не аутентифицирован",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(ref = "StandardResponseDto"))
-                    }
-            )
-    })
-    @GetMapping("/my/tasks")
-    ResponseEntity<TasksPage> getMyTasks(@Parameter(hidden = true)
                                           @AuthenticationPrincipal AuthenticatedUser currentUser);
 
     @Operation(summary = "Получение списка всех пользователей", description = "Доступно только администратору")
@@ -101,9 +83,8 @@ public interface UsersApi {
             )
     })
     @GetMapping("/{user_id}")
-    ResponseEntity<UserDto> getUserById(Long userId,
-                                        @Parameter(hidden = true)
-                                        @AuthenticationPrincipal AuthenticatedUser currentUser);
+    ResponseEntity<UserDto> getUserById(@Parameter(description = "id пользователя") @PathVariable("user_id") Long userId,
+                                        @Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser currentUser);
 
     @Operation(summary = "Блокирование пользователя по id", description = "Доступно только администратору")
     @ApiResponses(value = {
@@ -123,7 +104,7 @@ public interface UsersApi {
             )
     })
     @PutMapping("/{user_id}/block")
-    ResponseEntity<UserDto> blockUserById(Long userId);
+    ResponseEntity<UserDto> blockUserById(@Parameter(description = "id пользователя") @PathVariable("user_id") Long userId);
 
     @Operation(summary = "Разблокирование пользователя по id", description = "Доступно только администратору")
     @ApiResponses(value = {
@@ -143,6 +124,6 @@ public interface UsersApi {
             )
     })
     @PutMapping("/{user_id}/unblock")
-    ResponseEntity<UserDto> unblockUserById(Long userId);
+    ResponseEntity<UserDto> unblockUserById(@Parameter(description = "id пользователя") @PathVariable("user_id") Long userId);
 
 }

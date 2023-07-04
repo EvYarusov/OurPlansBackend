@@ -42,6 +42,4 @@ public class User {
 
     private boolean isBlocked;
 
-    @OneToMany(mappedBy = "user")
-    private List<Task> tasks;
 }
