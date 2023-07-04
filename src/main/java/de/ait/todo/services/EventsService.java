@@ -1,8 +1,9 @@
 package de.ait.todo.services;
 
-import de.ait.todo.dto.EventDTO;
-import de.ait.todo.dto.EventsPage;
-import de.ait.todo.dto.NewEventDTO;
+import de.ait.todo.dto.*;
+import de.ait.todo.security.details.AuthenticatedUser;
+
+import java.util.List;
 
 public interface EventsService {
 
@@ -16,5 +17,18 @@ public interface EventsService {
 
     EventDTO eventBlock(Long eventId, Boolean isBlock);
 
+    List<UserDto> getMembersByEventId(Long eventId);
+
+    Integer takePartInEvent(AuthenticatedUser authenticatedUser, Long eventId);
+
+    Integer eventOut(AuthenticatedUser authenticatedUser, Long eventId);
+
+    EventsPage getEventsByPlace(String place);
+
+    EventsPage getEventsByCategory(String category);
+
+    EventsPage getEventsCreatedByMe(AuthenticatedUser authenticatedUser);
+
+    EventsPage getEventsWereIAmMember(AuthenticatedUser authenticatedUser);
 
 }

@@ -24,7 +24,7 @@ public class EventDTO {
 
     private Long id;
 
-   // private User user;
+    private Long ownerId;
 
     private String title;
 
@@ -43,6 +43,7 @@ public class EventDTO {
     public static EventDTO from (Event event) {
         return EventDTO.builder()
                 .id(event.getId())
+                .ownerId(event.getOwner().getId())
                 .title(event.getTitle())
                 .description(event.getDescription())
                 .startAt(event.getStartAt())

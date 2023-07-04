@@ -44,4 +44,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Task> tasks;
+
+    @ManyToMany(mappedBy = "members")
+    private List<Event> memberEvents; // список мероприятий, в которых он участвует
+
+    @OneToMany(mappedBy = "owner")
+    private List<Event> ownerEvents; // список мероприятий, которые он создал
 }
