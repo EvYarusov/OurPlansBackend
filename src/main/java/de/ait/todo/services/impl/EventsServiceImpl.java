@@ -11,11 +11,11 @@ import de.ait.todo.services.EventsService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import static de.ait.todo.dto.EventDTO.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -54,8 +54,11 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public EventsPage getAllEvents() {
+//        return from(eventsRepository.findAllByIsBlockedFalse());
+
         return EventsPage.builder()
                 .events(from(eventsRepository.findAll()))
+//                .events(from(eventsRepository.findAllByIsBlockedFalse())
                 .build();
     }
 
@@ -68,7 +71,7 @@ public class EventsServiceImpl implements EventsService {
     }
 
     @Override
-    public EventsPage getEventsByUserId(Long userId) {
+    public EventsPage getEventsByOwnerId(Long userId) {
 //        User user = usersRepository.findById(userId).orElseThrow(
 //                () -> new NotFoundException("Пользователь <" + userId + "> не найден")
 //        );
@@ -138,7 +141,7 @@ public class EventsServiceImpl implements EventsService {
 
     @Override
     public EventsPage getEventsCreatedByMe(AuthenticatedUser authenticatedUser) {
-        return getEventsByUserId(authenticatedUser.getUser().getId());
+        return getEventsByOwnerId(authenticatedUser.getUser().getId());
     }
 
     @Override
@@ -146,7 +149,79 @@ public class EventsServiceImpl implements EventsService {
         User user = usersRepository.findById(authenticatedUser.getUser().getId()).orElseThrow(
                 () -> new NotFoundException("Пользователь <" + authenticatedUser.getUser().getId() + "> не найден"));
         return EventsPage.builder()
-                .events(from(eventsRepository.findByMembersContaining(user)))
+                .events(from(eventsRepository.findByMembersContains(user)))
+                .build();
+    }
+
+    @Override
+    public EventDTO updateEvent(AuthenticatedUser authenticatedUser, Long eventId, NewEventDTO newEventDTO) {
+        Event event = eventsRepository.findById(eventId).orElseThrow(
+                () -> new NotFoundException("Мероприятие <" + eventId + "> не найдено"));
+        User user = usersRepository.findById(authenticatedUser.getUser().getId()).orElseThrow(
+                () -> new NotFoundException("Пользователь <" + authenticatedUser.getUser().getId() + "> не найден"));
+        if (event.getOwner().getId().equals(user.getId()) || user.getRole().equals(User.Role.ADMIN)) {
+
+            event.setTitle(newEventDTO.getTitle());
+            event.setDescription(newEventDTO.getDescription());
+            event.setStartAt(newEventDTO.getStartAt());
+            event.setFinishAt(newEventDTO.getFinishAt());
+            event.setPlace(newEventDTO.getPlace());
+            event.setCategory(newEventDTO.getCategory());
+
+            eventsRepository.save(event);
+        } else throw new NotFoundException("Вам не доступно редактирование мероприятия <" + eventId + ">");
+
+        return getEventById(eventId);
+    }
+
+    @Override
+    public StringPage getAllCategory() {
+        return StringPage.builder()
+                .strings(eventsRepository.getCategories())
+                .build();
+    }
+
+    @Override
+    public StringPage getAllPlaces() {
+
+//        HashSet<String> places = new HashSet<>();
+//        List<EventDTO> allEvents = getAllEvents().getEvents();
+//        for (EventDTO event : allEvents) {
+//            places.add(event.getPlace());
+//        }
+//        List<String> placesList = new ArrayList<>(places);
+//        return StringPage.builder()
+//               .strings(placesList)
+//               .build();
+
+        return StringPage.builder()
+                .strings(eventsRepository.getPlaces())
+                .build();
+    }
+
+    @Override
+    public void deleteEvent(AuthenticatedUser authenticatedUser, Long eventId) {
+        Event event = eventsRepository.findById(eventId).orElseThrow(
+                () -> new NotFoundException("Мероприятие <" + eventId + "> не найдено"));
+        User user = usersRepository.findById(authenticatedUser.getUser().getId()).orElseThrow(
+                () -> new NotFoundException("Пользователь <" + authenticatedUser.getUser().getId() + "> не найден"));
+        if (event.getOwner().getId().equals(user.getId())) {
+            eventsRepository.deleteById(eventId);
+        } else throw new NotFoundException("Вам не доступно редактирование мероприятия <" + eventId + ">");
+
+    }
+
+    @Override
+    public EventsPage allEventsOfUserBlock(Long userId, Boolean isBlock) {
+        User user = usersRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("Мероприятие <" + userId + "> не найдено"));   // вытаскиваем ли мы здесть все мероприятия юзера? Как через стрим?
+        List<Event> events = eventsRepository.findAllByOwner_Id(userId);
+        for (Event event : events) {
+            event.setIsBlocked(isBlock);
+        }
+        eventsRepository.saveAll(events);
+        return EventsPage.builder()
+                .events(from(eventsRepository.findAllByOwner_Id(userId)))
                 .build();
     }
 

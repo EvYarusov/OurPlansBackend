@@ -86,7 +86,7 @@ public interface EventApi {
             )
     })
     @GetMapping("/byUser/{user_id}")
-    ResponseEntity<EventsPage> getEventsByUserId(@Parameter(description = "идентификатор пользователя") @PathVariable("user_id") Long userId);
+    ResponseEntity<EventsPage> getEventsByOwnerId(@Parameter(description = "идентификатор пользователя") @PathVariable("user_id") Long userId);
 
 
     @Operation(summary = "заблокировать/разблокировать мероприятие", description = "Доступно администратору")
@@ -155,7 +155,7 @@ public interface EventApi {
                                     schema = @Schema(ref = "StandardResponseDto"))
                     })
     })
-    @PutMapping("{event_id}/members/me")
+    @PutMapping("/{event_id}/members/me")
     ResponseEntity<Integer> eventOut(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
                                      @Parameter(description = "идентификатор мероприятия")
                                      @PathVariable("event_id") Long eventId);
@@ -194,39 +194,104 @@ public interface EventApi {
                     }
             ),
     })
-    @GetMapping("author/me")
+    @GetMapping("/author/me")
     ResponseEntity<EventsPage> getEventsCreatedByMe(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser);
 
-//    @Operation(summary = "посмотреть мероприятия с моим участием", description = "Доступно зарегистрированному пользователю")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Мероприятия",
-//                    content = {
-//                            @Content(mediaType = "application/json",
-//                                    schema = @Schema(implementation = EventsPage.class))
-//                    }
-//            ),
-//    })
-//    @GetMapping("author/me")
-//    ResponseEntity<EventsPage> getEventsWereIAmMember(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser);
+    @Operation(summary = "посмотреть мероприятия с моим участием", description = "Доступно зарегистрированному пользователю")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Мероприятия",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = EventsPage.class))
+                    }
+            ),
+    })
+    @GetMapping("/member/me")
+    ResponseEntity<EventsPage> getEventsWereIAmMember(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser);
 
-//    @Operation(summary = "редактировать мероприятие", description = "Доступно зарегистрированному пользователю, создавшему мероприятие; администратору")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Вы заблокировали мероприятие",
-//                    content = {
-//                            @Content(mediaType = "application/json",
-//                                    schema = @Schema(implementation = EventDTO.class))
-//                    }
-//            ),
-//            @ApiResponse(responseCode = "404", description = "Мероприятие не найдено",
-//                    content = {
-//                            @Content(mediaType = "application/json",
-//                                    schema = @Schema(ref = "StandardResponseDto"))
-//                    }
-//            )
-//    })
-//    @PutMapping("{event_id}/update")
-//    ResponseEntity<EventDTO> editEvent(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
-//                                        @Parameter(description = "идентификатор мероприятия") @PathVariable("event_id") Long eventId);
+    @Operation(summary = "редактировать мероприятие", description = "Доступно зарегистрированному пользователю, создавшему мероприятие; администратору")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Вы заблокировали мероприятие",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = EventDTO.class))
+                    }
+            ),
+            @ApiResponse(responseCode = "404", description = "Мероприятие не найдено",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto"))
+                    }
+            )
+    })
+    @PutMapping("{event_id}/update")
+    ResponseEntity<EventDTO> updateEvent(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                                        @Parameter(description = "идентификатор мероприятия") @PathVariable("event_id") Long eventId,
+                                        @Parameter(description = "новые данные о мероприятии") @RequestBody NewEventDTO newEventDTO);
 
+    @Operation(summary = "посмотреть все категории мероприятий", description = "Доступно всем")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Все категории",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = StringPage.class))
+                    }
+            ),
+    })
+    @GetMapping("/all_category")
+    ResponseEntity<StringPage> getAllCategory();
+
+    @Operation(summary = "посмотреть все места проведения мероприятий", description = "Доступно всем")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Все категории",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = StringPage.class))
+                    }
+            ),
+    })
+    @GetMapping("/all_places")
+    ResponseEntity<StringPage> getAllPlaces();
+
+    @Operation(summary = "Удаление мероприятия по Id", description = "Доступно только зарегистрированному пользователю, который создал мероприятие")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Мероприятие удалено",  ////
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto"))
+                    }
+            ),
+            @ApiResponse(responseCode = "204", description = "Мероприятие удалено" ///
+            ),
+            @ApiResponse(responseCode = "404", description = "Мероприятие не найдено",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto"))
+                    }
+            )
+    })
+    @DeleteMapping("/{event_id}")
+    void deleteEvent(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+                     @PathVariable("event_id") Long eventId);
+
+    @Operation(summary = "заблокировать/разблокировать все мероприятия, созданные конкретным позьзователем", description = "Доступно администратору")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Вы заблокировали мероприятие",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = EventsPage.class))
+                    }
+            ),
+            @ApiResponse(responseCode = "404", description = "Мероприятия не найдено",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(ref = "StandardResponseDto"))
+                    }
+            )
+    })
+    @PutMapping("/{user_id}/block_events")
+    ResponseEntity <EventsPage> allEventsOfUserBlock(@Parameter(description = "идентификатор пользователя")
+                                        @PathVariable("user_id") Long eventId,
+                                        @Parameter(description = "Статус блокировки") @RequestParam Boolean isBlock);
 
 }
