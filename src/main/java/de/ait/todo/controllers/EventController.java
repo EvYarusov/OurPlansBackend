@@ -8,7 +8,6 @@ import de.ait.todo.services.EventsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.PermitAll;
@@ -43,9 +42,9 @@ public class EventController implements EventApi {
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @Override
-    public ResponseEntity<EventsPage> getEventsByUserId(Long userId) {
+    public ResponseEntity<EventsPage> getEventsByOwnerId(Long userId) {
         return ResponseEntity
-                .ok(eventsService.getEventsByUserId(userId));
+                .ok(eventsService.getEventsByOwnerId(userId));
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -95,12 +94,44 @@ public class EventController implements EventApi {
         return ResponseEntity
                 .ok(eventsService.getEventsCreatedByMe(authenticatedUser));
     }
+    @PreAuthorize("hasAuthority('USER')")
+    @Override
+    public ResponseEntity<EventsPage> getEventsWereIAmMember(AuthenticatedUser authenticatedUser) {
+        return ResponseEntity
+                .ok(eventsService.getEventsWereIAmMember(authenticatedUser));
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @Override
+    public ResponseEntity<EventDTO> updateEvent(AuthenticatedUser authenticatedUser, Long eventId, NewEventDTO newEventDTO) {
+        return ResponseEntity
+                .ok(eventsService.updateEvent(authenticatedUser, eventId, newEventDTO));
+    }
 
-//    @Override
-//    public ResponseEntity<EventsPage> getEventsWereIAmMember(AuthenticatedUser authenticatedUser) {
-//        return ResponseEntity
-//                .ok(eventsService.getEventsWereIAmMember(authenticatedUser));
-//    }
+    @Override
+    public ResponseEntity<StringPage> getAllCategory() {
+        return ResponseEntity
+                .ok(eventsService.getAllCategory());
+    }
+
+    @Override
+    public ResponseEntity<StringPage> getAllPlaces() {
+        return ResponseEntity
+                .ok(eventsService.getAllPlaces());
+    }
+
+    @PreAuthorize("hasAuthority('USER')")
+    @Override
+    public void deleteEvent(AuthenticatedUser authenticatedUser, Long eventId) {
+        eventsService.deleteEvent(authenticatedUser, eventId);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Override
+    public ResponseEntity<EventsPage> allEventsOfUserBlock(Long userId, Boolean isBlock) {
+        return ResponseEntity
+                .ok(eventsService.allEventsOfUserBlock(userId, isBlock));
+
+    }
 
 
 }

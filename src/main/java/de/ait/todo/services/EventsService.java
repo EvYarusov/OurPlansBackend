@@ -2,6 +2,7 @@ package de.ait.todo.services;
 
 import de.ait.todo.dto.*;
 import de.ait.todo.security.details.AuthenticatedUser;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface EventsService {
 
     EventDTO getEventById(Long eventId);
 
-    EventsPage getEventsByUserId(Long userId);
+    EventsPage getEventsByOwnerId(Long userId);
 
     EventDTO eventBlock(Long eventId, Boolean isBlock);
 
@@ -31,4 +32,13 @@ public interface EventsService {
 
     EventsPage getEventsWereIAmMember(AuthenticatedUser authenticatedUser);
 
+    EventDTO updateEvent(AuthenticatedUser authenticatedUser, Long eventId, NewEventDTO newEventDTO);
+
+    StringPage getAllCategory();
+
+    StringPage getAllPlaces();
+
+    void deleteEvent(AuthenticatedUser authenticatedUser, Long eventId);
+
+    EventsPage allEventsOfUserBlock(Long userId, Boolean isBlock);
 }
