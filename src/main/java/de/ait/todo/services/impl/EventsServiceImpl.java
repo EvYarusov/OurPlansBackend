@@ -57,15 +57,16 @@ public class EventsServiceImpl implements EventsService {
 //        return from(eventsRepository.findAllByIsBlockedFalse());
 
         return EventsPage.builder()
-                .events(from(eventsRepository.findAll()))
-//                .events(from(eventsRepository.findAllByIsBlockedFalse())
+ //               .events(from(eventsRepository.findAll()))
+                .events(from(eventsRepository.findAllByIsBlockedFalse()))
                 .build();
     }
 
     @Override
     public EventDTO getEventById(Long eventId) {
-        Event event = eventsRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException("Мероприятие <" + eventId + "> не найдена")
+//        Event event = eventsRepository.findById(eventId).orElseThrow(
+        Event event = eventsRepository.findByIdAndIsBlockedFalse(eventId)
+                .orElseThrow(() -> new NotFoundException("Мероприятие <" + eventId + "> не найдено")
         );
         return from(event);
     }
@@ -214,7 +215,7 @@ public class EventsServiceImpl implements EventsService {
     @Override
     public EventsPage allEventsOfUserBlock(Long userId, Boolean isBlock) {
         User user = usersRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("Мероприятие <" + userId + "> не найдено"));   // вытаскиваем ли мы здесть все мероприятия юзера? Как через стрим?
+                () -> new NotFoundException("Мероприятие <" + userId + "> не найдено"));
         List<Event> events = eventsRepository.findAllByOwner_Id(userId);
         for (Event event : events) {
             event.setIsBlocked(isBlock);

@@ -10,6 +10,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EventsRepository extends JpaRepository <Event, Long> {
@@ -21,6 +22,7 @@ public interface EventsRepository extends JpaRepository <Event, Long> {
 
     List<Event> findByMembersContains(User eventMember);
     List<Event> findAllByIsBlockedFalse();
+    Optional<Event> findByIdAndIsBlockedFalse(Long eventId);
 
   //  List<Event> findByUser(Long userId);
     List<Event> findAllByOwnerAndIsBlockedAndOwner_IsBlocked(User owner, Boolean isBlocked, Boolean isBlockedOwner);
