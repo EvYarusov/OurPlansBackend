@@ -11,9 +11,9 @@ import de.ait.todo.services.EventsService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import static de.ait.todo.dto.EventDTO.*;
+import static de.ait.todo.dto.UserDto.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,27 +44,21 @@ public class EventsServiceImpl implements EventsService {
                 .category(newEventDTO.getCategory())
                 .isBlocked(false)
                 .build();
-       // Event event = modelMapper.map(newEventDTO, Event.class);
-       // event.setCteatedAt(LocalDateTime.now());
-       // event.setAuthorId(currentUserID);
 
         eventsRepository.save(newEvent);
-        return from(newEvent);   ///
+        return from(newEvent);
     }
 
     @Override
     public EventsPage getAllEvents() {
-//        return from(eventsRepository.findAllByIsBlockedFalse());
 
         return EventsPage.builder()
- //               .events(from(eventsRepository.findAll()))
                 .events(from(eventsRepository.findAllByIsBlockedFalse()))
                 .build();
     }
 
     @Override
     public EventDTO getEventById(Long eventId) {
-//        Event event = eventsRepository.findById(eventId).orElseThrow(
         Event event = eventsRepository.findByIdAndIsBlockedFalse(eventId)
                 .orElseThrow(() -> new NotFoundException("Мероприятие <" + eventId + "> не найдено")
         );
@@ -78,7 +72,8 @@ public class EventsServiceImpl implements EventsService {
 //        );
 
         return EventsPage.builder()
-                .events(from(eventsRepository.findAllByOwner_Id(userId))) ///
+ //               .events(from(eventsRepository.findAllByOwner_Id(userId)))
+                .events(from(eventsRepository.findAllByOwner_IdAndIsBlockedFalse(userId)))
                 .build();
     }
 
@@ -102,26 +97,35 @@ public class EventsServiceImpl implements EventsService {
     }
 
     @Override
-    public Integer takePartInEvent(AuthenticatedUser authenticatedUser, Long eventId) {
+    public UsersPage takePartInEvent(AuthenticatedUser authenticatedUser, Long eventId) {
         Event event = eventsRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Мероприятие <" + eventId + "> не найдено")
         );
         User user = usersRepository.findById(authenticatedUser.getUser().getId()).orElseThrow(
-                () -> new NotFoundException("Пользователь <" + authenticatedUser.getUser().getId() + "> не найден")  // какая нужна ошибка?
+                () -> new NotFoundException("Пользователь <" + authenticatedUser.getUser().getId() + "> не найден")
         );
         event.getMembers().add(user);
         eventsRepository.save(event);
-        return event.getMembers().size();
+        return UsersPage.builder()
+                .users(from(event.getMembers())) //
+                .build();
     }
 
     @Override
-    public Integer eventOut(AuthenticatedUser authenticatedUser, Long eventId) {
+    public UsersPage eventOut(AuthenticatedUser authenticatedUser, Long eventId) {
         Event event = eventsRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Мероприятие <" + eventId + "> не найдено")
         );
-        event.getMembers().remove(authenticatedUser);
+        User user = usersRepository.findById(authenticatedUser.getUser().getId()).orElseThrow(
+                () -> new NotFoundException("Пользователь <" + authenticatedUser.getUser().getId() + "> не найден")
+        );
+        List<User> members = event.getMembers();
+        members.remove(user);
+        event.setMembers(members);
         eventsRepository.save(event);
-        return event.getMembers().size();
+        return UsersPage.builder()
+                .users(from(event.getMembers()))
+                .build();
     }
 
     @Override

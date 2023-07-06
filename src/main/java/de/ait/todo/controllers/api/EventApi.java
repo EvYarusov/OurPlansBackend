@@ -133,11 +133,11 @@ public interface EventApi {
             @ApiResponse(responseCode = "200", description = "Вы зарегистрированы под номером",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = UserDto.class))
+                                    schema = @Schema(implementation = UsersPage.class))
                     })
     })
     @PostMapping("/{event_id}/members/me")
-    ResponseEntity<Integer> takePartInEvent(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+    ResponseEntity<UsersPage> takePartInEvent(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
                                             @Parameter(description = "идентификатор мероприятие") @PathVariable("event_id") Long eventId);
 
 
@@ -146,17 +146,17 @@ public interface EventApi {
             @ApiResponse(responseCode = "200", description = "Вы покинули мероприятие",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = Integer.class))
+                                    schema = @Schema(implementation = EventsPage.class))
                     }
             ),
             @ApiResponse(responseCode = "404", description = "Мероприятие не найдено",
                     content = {
                             @Content(mediaType = "application/json",
-                                    schema = @Schema(ref = "StandardResponseDto"))
+                                    schema = @Schema(implementation = UsersPage.class))
                     })
     })
     @PutMapping("/{event_id}/members/me")
-    ResponseEntity<Integer> eventOut(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+    ResponseEntity<UsersPage> eventOut(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
                                      @Parameter(description = "идентификатор мероприятия")
                                      @PathVariable("event_id") Long eventId);
 
