@@ -63,14 +63,14 @@ public class EventController implements EventApi {
 
     @PreAuthorize("hasAuthority('USER')")
     @Override
-    public ResponseEntity<Integer> takePartInEvent(AuthenticatedUser authenticatedUser, Long eventId) {
+    public ResponseEntity<Long> takePartInEvent(AuthenticatedUser authenticatedUser, Long eventId) {
         return ResponseEntity
                 .ok(eventsService.takePartInEvent(authenticatedUser, eventId));
     }
 
     @PreAuthorize("hasAuthority('USER')")
     @Override
-    public ResponseEntity<Integer> eventOut(AuthenticatedUser authenticatedUser, Long eventId) {
+    public ResponseEntity<Long> eventOut(AuthenticatedUser authenticatedUser, Long eventId) {
         return ResponseEntity
                 .ok(eventsService.eventOut(authenticatedUser, eventId));
     }

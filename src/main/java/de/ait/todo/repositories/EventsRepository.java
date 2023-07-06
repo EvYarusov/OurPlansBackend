@@ -15,6 +15,7 @@ import java.util.Optional;
 @Repository
 public interface EventsRepository extends JpaRepository <Event, Long> {
     List<Event> findAllByOwner_Id(Long userId);
+    List<Event> findAllByOwner_IdAndIsBlockedFalse(Long userId);
 
     List<Event> findAllByPlace(String place);
 
