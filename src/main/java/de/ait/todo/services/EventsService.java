@@ -20,9 +20,9 @@ public interface EventsService {
 
     List<UserDto> getMembersByEventId(Long eventId);
 
-    UsersPage takePartInEvent(AuthenticatedUser authenticatedUser, Long eventId);
+    Long takePartInEvent(AuthenticatedUser authenticatedUser, Long eventId);
 
-    UsersPage eventOut(AuthenticatedUser authenticatedUser, Long eventId);
+    Long eventOut(AuthenticatedUser authenticatedUser, Long eventId);
 
     EventsPage getEventsByPlace(String place);
 

@@ -97,7 +97,7 @@ public class EventsServiceImpl implements EventsService {
     }
 
     @Override
-    public UsersPage takePartInEvent(AuthenticatedUser authenticatedUser, Long eventId) {
+    public Long takePartInEvent(AuthenticatedUser authenticatedUser, Long eventId) {
         Event event = eventsRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Мероприятие <" + eventId + "> не найдено")
         );
@@ -106,13 +106,11 @@ public class EventsServiceImpl implements EventsService {
         );
         event.getMembers().add(user);
         eventsRepository.save(event);
-        return UsersPage.builder()
-                .users(from(event.getMembers())) //
-                .build();
+        return user.getId();
     }
 
     @Override
-    public UsersPage eventOut(AuthenticatedUser authenticatedUser, Long eventId) {
+    public Long eventOut(AuthenticatedUser authenticatedUser, Long eventId) {
         Event event = eventsRepository.findById(eventId).orElseThrow(
                 () -> new NotFoundException("Мероприятие <" + eventId + "> не найдено")
         );
@@ -123,9 +121,7 @@ public class EventsServiceImpl implements EventsService {
         members.remove(user);
         event.setMembers(members);
         eventsRepository.save(event);
-        return UsersPage.builder()
-                .users(from(event.getMembers()))
-                .build();
+        return user.getId();
     }
 
     @Override

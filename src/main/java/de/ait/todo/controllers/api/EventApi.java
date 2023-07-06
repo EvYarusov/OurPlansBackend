@@ -137,7 +137,7 @@ public interface EventApi {
                     })
     })
     @PostMapping("/{event_id}/members/me")
-    ResponseEntity<UsersPage> takePartInEvent(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+    ResponseEntity<Long> takePartInEvent(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
                                             @Parameter(description = "идентификатор мероприятие") @PathVariable("event_id") Long eventId);
 
 
@@ -156,7 +156,7 @@ public interface EventApi {
                     })
     })
     @PutMapping("/{event_id}/members/me")
-    ResponseEntity<UsersPage> eventOut(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+    ResponseEntity<Long> eventOut(@Parameter (hidden = true) @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
                                      @Parameter(description = "идентификатор мероприятия")
                                      @PathVariable("event_id") Long eventId);
 
